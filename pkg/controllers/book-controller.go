@@ -50,13 +50,15 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	ID, err := strconv.ParseInt(bookId, 0, 0)
 	if err != nil {
 		fmt.Println("error while parsing")
+		http.Error(w, "Invalid book ID", http.StatusBadRequest)
+		return
 	}
-	book := models.DeleteBook(ID)
-	res, _ := json.Marshal(book)
-	w.Header().Set("Content-Type", "pcglication/json")
+	err = models.DeleteBook(ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(res)
-
 }
 
 func UpdateBook(w http.ResponseWriter, r *http.Request) {
